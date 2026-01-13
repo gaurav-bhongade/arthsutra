@@ -1,0 +1,656 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}User Management - ArthSutra{% endblock %}
+
+{% block content %}
+<div class="container-fluid content-wrapper">
+    <div class="row">
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{{ message.tags|default:'info' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+    
+        <!-- Main Content -->
+        <div class="col-12 main-content">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">User Management</li>
+                </ol>
+            </nav>
+
+            <!-- Header with Add Button -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-users text-info me-2"></i>User Management</h2>
+                <a href="{% url 'user_create' %}" class="btn btn-info">
+                    <i class="fas fa-plus me-1"></i>Add New User
+                </a>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-users fa-2x text-info mb-2"></i>
+                            <h4>{{ total_users }}</h4>
+                            <small class="text-muted">Total Users</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-user-shield fa-2x text-danger mb-2"></i>
+                            <h4>{{ admin_count }}</h4>
+                            <small class="text-muted">Admin Users</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-user-tag fa-2x text-warning mb-2"></i>
+                            <h4>{{ expense_count }}</h4>
+                            <small class="text-muted">Expense Users</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card text-center">
+                        <div class="card-body">
+                            <i class="fas fa-user-check fa-2x text-success mb-2"></i>
+                            <h4>{{ income_count }}</h4>
+                            <small class="text-muted">Income Users</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card shadow">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-list me-2"></i>All Users</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="fas fa-user me-1"></i>Username</th>
+                                    <th><i class="fas fa-user-tag me-1"></i>Full Name</th>
+                                    <th><i class="fas fa-envelope me-1"></i>Email</th>
+                                    <th><i class="fas fa-shield-alt me-1"></i>Role</th>
+                                    <th><i class="fas fa-calendar me-1"></i>Last Login</th>
+                                    <th><i class="fas fa-cogs me-1"></i>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ user.username }}</strong>
+                                        {% if user.is_superuser %}
+                                        <span class="badge bg-danger ms-1">Superuser</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.get_full_name|default:"—" }}</td>
+                                    <td>{{ user.email|default:"—" }}</td>
+                                    <td>
+                                        <span class="badge
+                                            {% if user.role == 'ADMIN' %}bg-danger
+                                            {% elif user.role == 'EXPENSE_USER' %}bg-warning text-dark
+                                            {% elif user.role == 'INCOME_USER' %}bg-success
+                                            {% endif %}">
+                                            {{ user.get_role_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if user.last_login %}
+                                            {{ user.last_login|date:"M d, Y H:i" }}
+                                        {% else %}
+                                            <span class="text-muted">Never</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <!-- <a href="{% url 'user_update' user.id %}"
+                                            class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a> -->
+
+                                            {% if user != request.user %}
+                                            <a href="{% url 'user_delete' user.id %}"
+                                            class="btn btn-sm btn-outline-danger">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        <i class="fas fa-users fa-3x mb-3 opacity-50"></i>
+                                        <div>No users found</div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 45px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card:hover::before {
+        opacity: 1;
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 1rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stat-icon.total { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+    .stat-icon.admin { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+    .stat-icon.expense { background: linear-gradient(135deg, #fd7e14, #e8680f); color: white; }
+    .stat-icon.income { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 2;
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        color: #718096;
+        font-weight: 500;
+        position: relative;
+        z-index: 2;
+    }
+
+    .users-table-card {
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .table-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .table-header h5 {
+        color: #495057;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .modern-table {
+        margin: 0;
+    }
+
+    .modern-table thead th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        color: #495057;
+        padding: 1rem;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+    }
+
+    .modern-table tbody tr {
+        transition: all 0.3s ease;
+        border-bottom: 1px solid #f1f3f4;
+    }
+
+    .modern-table tbody tr:hover {
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        transform: scale(1.01);
+    }
+
+    .modern-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        color: #495057;
+    }
+
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        margin-right: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .role-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .role-badge.admin {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .role-badge.expense {
+        background: linear-gradient(135deg, #fd7e14, #e8680f);
+        color: white;
+    }
+
+    .role-badge.income {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+    }
+
+    .status-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .status-badge.active {
+        background: linear-gradient(135deg, #28a745, #1e7e34);
+        color: white;
+    }
+
+    .status-badge.inactive {
+        background: linear-gradient(135deg, #6c757d, #495057);
+        color: white;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-action {
+        width: 35px;
+        height: 35px;
+        border-radius: 8px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .btn-action.edit {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-action.edit:hover {
+        background: linear-gradient(135deg, #5a6fd8, #6a4190);
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-action.delete {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+    }
+
+    .btn-action.delete:hover {
+        background: linear-gradient(135deg, #c82333, #a02622);
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .add-user-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .add-user-btn:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    .add-user-btn i {
+        margin-right: 0.5rem;
+    }
+
+    .alert-modern {
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .user-management-container {
+            padding: 1rem 0;
+        }
+
+        .management-header {
+            padding: 1.5rem;
+        }
+
+        .management-title {
+            font-size: 1.8rem;
+        }
+
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .modern-table {
+            font-size: 0.9rem;
+        }
+
+        .modern-table thead th,
+        .modern-table tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+    }
+</style>
+
+<div class="user-management-container">
+    <div class="container">
+        <!-- Management Header -->
+        <div class="management-header">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h1 class="management-title">
+                        <i class="fas fa-users-cog me-3"></i>User Management
+                    </h1>
+                    <p class="management-subtitle">Manage user accounts, roles, and permissions</p>
+                </div>
+                <a href="{% url 'user_create' %}" class="add-user-btn">
+                    <i class="fas fa-user-plus"></i>Add New User
+                </a>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-modern alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon total">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stat-number">{{ total_users }}</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon admin">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="stat-number">{{ admin_count }}</div>
+                <div class="stat-label">Administrators</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon expense">
+                    <i class="fas fa-arrow-down"></i>
+                </div>
+                <div class="stat-number">{{ expense_count }}</div>
+                <div class="stat-label">Expense Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon income">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <div class="stat-number">{{ income_count }}</div>
+                <div class="stat-label">Income Users</div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="users-table-card">
+            <div class="table-header">
+                <h5><i class="fas fa-table me-2"></i>All Users</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table modern-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Contact</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar">
+                                        {{ user.first_name|first|default:user.username|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-bold">{{ user.username }}</div>
+                                        <small class="text-muted">{{ user.get_full_name|default:"—" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <i class="fas fa-envelope text-muted me-1"></i>
+                                    {{ user.email|default:"—" }}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="role-badge
+                                    {% if user.role == 'ADMIN' %}admin
+                                    {% elif user.role == 'EXPENSE_USER' %}expense
+                                    {% elif user.role == 'INCOME_USER' %}income
+                                    {% endif %}">
+                                    <i class="fas fa-shield-alt me-1"></i>
+                                    {{ user.get_role_display }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="status-badge
+                                    {% if user.is_active %}active{% else %}inactive{% endif %}">
+                                    <i class="fas fa-circle me-1"></i>
+                                    {% if user.is_active %}Active{% else %}Inactive{% endif %}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.last_login %}
+                                    <div>
+                                        <i class="fas fa-clock text-muted me-1"></i>
+                                        {{ user.last_login|date:"M d, Y" }}
+                                    </div>
+                                    <small class="text-muted">{{ user.last_login|date:"H:i" }}</small>
+                                {% else %}
+                                    <span class="text-muted">Never logged in</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <a href="{% url 'user_update' user.id %}" class="btn-action edit" title="Edit User">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    {% if not user == request.user %}
+                                    <a href="{% url 'user_delete' user.id %}" class="btn-action delete" title="Delete User"
+                                       onclick="return confirm('Are you sure you want to delete user {{ user.username }}? This action cannot be undone.')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fas fa-users"></i>
+                                    <h5>No Users Found</h5>
+                                    <p>Start by creating your first user account.</p>
+                                    <a href="{% url 'user_create' %}" class="add-user-btn">
+                                        <i class="fas fa-user-plus me-2"></i>Create First User
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add smooth animations to table rows
+        const tableRows = document.querySelectorAll('.modern-table tbody tr');
+        tableRows.forEach((row, index) => {
+            if (!row.querySelector('.empty-state')) {
+                row.style.animationDelay = `${index * 0.1}s`;
+                row.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+            }
+        });
+
+        // Add fadeInUp animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeInUp {
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Enhanced delete confirmation
+        const deleteButtons = document.querySelectorAll('.btn-action.delete');
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const userName = this.closest('tr').querySelector('.fw-bold').textContent;
+                const confirmed = confirm(`Are you sure you want to delete user "${userName}"?\n\nThis action cannot be undone and will permanently remove the user account.`);
+                if (!confirmed) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

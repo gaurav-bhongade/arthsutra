@@ -1,0 +1,7 @@
+department_id,expense_type,amount,date
+1,Medical Supplies,50000,15-01-2025
+1,Equipment,25000,20-01-2025
+2,X-Ray Film,15000,18-01-2025
+2,Maintenance,8000,22-01-2025
+3,Pharmaceuticals,75000,16-01-2025
+3,Storage,12000,25-01-2025

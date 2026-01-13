@@ -1,0 +1,719 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - ArthSutra{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Creative Dashboard Styles */
+    .dashboard-hero {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin: -1rem -1rem 2rem -1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dashboard-hero::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        animation: float 20s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px) rotate(0deg); }
+        33% { transform: translateY(-10px) rotate(120deg); }
+        66% { transform: translateY(5px) rotate(240deg); }
+    }
+
+    .dashboard-hero .container-fluid {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .welcome-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .welcome-section p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        margin: 0;
+    }
+
+    .user-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.8) 100%);
+        color: #667eea;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Statistics Cards */
+    .stats-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+
+    .stats-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .stats-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+    }
+
+    .stats-card.income::before {
+        background: linear-gradient(90deg, #28a745, #20c997);
+    }
+
+    .stats-card.expense::before {
+        background: linear-gradient(90deg, #dc3545, #fd7e14);
+    }
+
+    .stats-card.profit::before {
+        background: linear-gradient(90deg, #17a2b8, #6f42c1);
+    }
+
+    .stats-card.loans::before {
+        background: linear-gradient(90deg, #ffc107, #fd7e14);
+    }
+
+    .stats-card-body {
+        padding: 2rem;
+        position: relative;
+    }
+
+    .stats-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stats-icon::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+        border-radius: 15px;
+    }
+
+    .stats-icon i {
+        position: relative;
+        z-index: 1;
+    }
+
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #2d3748;
+    }
+
+    .stats-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .stats-trend {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        opacity: 0.7;
+    }
+
+    /* Quick Actions */
+    .quick-actions {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .quick-actions h5 {
+        color: #2d3748;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .action-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.25rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .action-btn.expense {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+    }
+
+    .action-btn.expense:hover {
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.3);
+    }
+
+    .action-btn.income {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    }
+
+    .action-btn.income:hover {
+        box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+    }
+
+    .action-btn.loan {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        color: #212529;
+    }
+
+    .action-btn.loan:hover {
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.3);
+        color: #212529;
+    }
+
+    .action-btn.history {
+        background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+    }
+
+    .action-btn.history:hover {
+        box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+    }
+
+    /* Department button specific hover */
+    .action-btn[href*="department"]:hover {
+        box-shadow: 0 8px 25px rgba(111, 66, 193, 0.3) !important;
+    }
+
+    /* Charts Section */
+    .charts-section {
+        margin-bottom: 2rem;
+    }
+
+    .chart-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .chart-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .chart-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-header h5 {
+        color: #2d3748;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .chart-header i {
+        color: #667eea;
+        margin-right: 0.5rem;
+    }
+
+    .chart-body {
+        padding: 2rem;
+    }
+
+    .chart-container {
+        position: relative;
+        height: 300px;
+    }
+
+    /* Transactions Section */
+    .transactions-card {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: none;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .transactions-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .transactions-header h5 {
+        color: #2d3748;
+        font-weight: 600;
+        margin: 0;
+    }
+
+    .transactions-header .btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .transactions-header .btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        color: white;
+        text-decoration: none;
+    }
+
+    .transactions-table {
+        margin: 0;
+    }
+
+    .transactions-table thead th {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.8rem;
+    }
+
+    .transactions-table tbody tr {
+        transition: all 0.2s ease;
+    }
+
+    .transactions-table tbody tr:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+
+    .transactions-table tbody td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        vertical-align: middle;
+    }
+
+    .amount-positive {
+        color: #28a745;
+        font-weight: 600;
+    }
+
+    .amount-negative {
+        color: #dc3545;
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+        color: #6c757d;
+    }
+
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .dashboard-hero {
+            padding: 1.5rem 0;
+            margin: -1rem -1rem 1.5rem -1rem;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+        }
+
+        .stats-card-body {
+            padding: 1.5rem;
+        }
+
+        .stats-number {
+            font-size: 1.5rem;
+        }
+
+        .quick-actions {
+            padding: 1.5rem;
+        }
+
+        .action-btn {
+            display: block;
+            width: 100%;
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+
+        .chart-container {
+            height: 250px;
+        }
+
+        .transactions-header {
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+    }
+
+    /* Loading Animation */
+    .stats-card-loading {
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+    <!-- Dashboard Hero Section -->
+    <div class="dashboard-hero">
+        <div class="container-fluid">
+            <div class="welcome-section">
+                <div class="user-avatar">
+                    {{ user.first_name|first|default:user.username|first|upper }}
+                </div>
+                <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h1>
+                <p>Welcome back, {{ user.get_full_name|default:user.username }}! Here's your financial overview.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+            <h5><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+            <div class="d-flex flex-wrap">
+                {% if user.role == 'ADMIN' %}
+                <a href="{% url 'department' %}" class="action-btn" style="background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);">
+                    <i class="fas fa-building"></i>
+                    Add Department
+                </a>
+                {% endif %}
+                {% if user.role == 'ADMIN' or user.role == 'EXPENSE_USER' %}
+                <a href="{% url 'expense' %}" class="action-btn expense">
+                    <i class="fas fa-plus"></i>
+                    Add Expense
+                </a>
+                {% endif %}
+                {% if user.role == 'ADMIN' or user.role == 'INCOME_USER' %}
+                <a href="{% url 'income' %}" class="action-btn income">
+                    <i class="fas fa-plus"></i>
+                    Add Income
+                </a>
+                {% endif %}
+                {% if user.role == 'ADMIN' %}
+                <a href="{% url 'loan' %}" class="action-btn loan">
+                    <i class="fas fa-plus"></i>
+                    Add Loan
+                </a>
+                {% endif %}
+                <a href="{% url 'upload_history' %}" class="action-btn history">
+                    <i class="fas fa-history"></i>
+                    Upload History
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="row mb-4">
+            {% if user.role == 'ADMIN' or user.role == 'INCOME_USER' %}
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card income">
+                    <div class="stats-card-body">
+                        <div class="stats-icon" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%);">
+                            <i class="fas fa-arrow-up text-white"></i>
+                        </div>
+                        <div class="stats-number">₹{{ total_income|floatformat:0 }}</div>
+                        <div class="stats-label">Total Income</div>
+                        <div class="stats-trend">
+                            <i class="fas fa-arrow-up text-success"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.role == 'ADMIN' or user.role == 'EXPENSE_USER' %}
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card expense">
+                    <div class="stats-card-body">
+                        <div class="stats-icon" style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);">
+                            <i class="fas fa-arrow-down text-white"></i>
+                        </div>
+                        <div class="stats-number">₹{{ total_expense|floatformat:0 }}</div>
+                        <div class="stats-label">Total Expenses</div>
+                        <div class="stats-trend">
+                            <i class="fas fa-arrow-down text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.role == 'ADMIN' %}
+            <div class="col-lg-3 col-md-6">
+                <div class="stats-card profit">
+                    <div class="stats-card-body">
+                        <div class="stats-icon" style="background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);">
+                            <i class="fas fa-chart-line text-white"></i>
+                        </div>
+                        <div class="stats-number">₹{{ total_profit|floatformat:0 }}</div>
+                        <div class="stats-label">Net Profit</div>
+                        <div class="stats-trend">
+                            <i class="fas fa-chart-line text-info"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="{% if user.role == 'ADMIN' %}col-lg-3{% else %}col-lg-6{% endif %} col-md-6">
+                <div class="stats-card loans">
+                    <div class="stats-card-body">
+                        <div class="stats-icon" style="background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);">
+                            <i class="fas fa-money-check text-white"></i>
+                        </div>
+                        <div class="stats-number">₹{{ total_loans|floatformat:0 }}</div>
+                        <div class="stats-label">Active Loans</div>
+                        <div class="stats-trend">
+                            <i class="fas fa-money-check text-warning"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="charts-section">
+            <div class="row">
+                <div class="col-lg-8 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5><i class="fas fa-chart-bar"></i>Monthly Trends</h5>
+                        </div>
+                        <div class="chart-body">
+                            <div class="chart-container">
+                                <canvas id="monthlyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h5><i class="fas fa-building"></i>Department Overview</h5>
+                        </div>
+                        <div class="chart-body">
+                            <div class="chart-container">
+                                <canvas id="departmentChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="row">
+            {% if user.role == 'ADMIN' or user.role == 'EXPENSE_USER' %}
+            <div class="col-lg-6 mb-4">
+                <div class="transactions-card">
+                    <div class="transactions-header">
+                        <h5><i class="fas fa-arrow-down text-danger me-2"></i>Recent Expenses</h5>
+                        <a href="{% url 'finance_list' %}" class="btn">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table transactions-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Department</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for expense in recent_expenses %}
+                                <tr>
+                                    <td>{{ expense.date|date:"M d, Y" }}</td>
+                                    <td>{{ expense.department.name }}</td>
+                                    <td>{{ expense.expense_type }}</td>
+                                    <td class="amount-negative">₹{{ expense.amount|floatformat:0 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <i class="fas fa-receipt"></i>
+                                            <div>No expenses recorded yet</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if user.role == 'ADMIN' or user.role == 'INCOME_USER' %}
+            <div class="col-lg-6 mb-4">
+                <div class="transactions-card">
+                    <div class="transactions-header">
+                        <h5><i class="fas fa-arrow-up text-success me-2"></i>Recent Income</h5>
+                        <a href="{% url 'finance_list' %}" class="btn">View All</a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table transactions-table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Department</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for income in recent_income %}
+                                <tr>
+                                    <td>{{ income.date|date:"M d, Y" }}</td>
+                                    <td>{{ income.department.name }}</td>
+                                    <td>{{ income.service_type }}</td>
+                                    <td class="amount-positive">₹{{ income.amount|floatformat:0 }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4">
+                                        <div class="empty-state">
+                                            <i class="fas fa-coins"></i>
+                                            <div>No income recorded yet</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Chart Data -->
+    <script id="months-data" type="application/json">
+        {{ months_data|safe }}
+    </script>
+    <script id="dept-data" type="application/json">
+        {{ departments|safe }}
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{% static 'js/dashboard.js' %}"></script>
+
+    {% block extra_scripts %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading animation to stats cards
+            const statsCards = document.querySelectorAll('.stats-card');
+            statsCards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.classList.add('stats-card-loading');
+                    setTimeout(() => {
+                        card.classList.remove('stats-card-loading');
+                    }, 1000);
+                }, index * 200);
+            });
+
+            // Smooth scroll for action buttons
+            const actionBtns = document.querySelectorAll('.action-btn');
+            actionBtns.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    // Add click animation
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+    {% endblock %}
+{% endblock %}

@@ -1,0 +1,221 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Loan - ArthSutra{% endblock %}
+
+{% block content %}
+<div class="container-fluid content-wrapper">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-12 main-content">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'finance_list' %}">Finance</a></li>
+                    <li class="breadcrumb-item active">Create Loan</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="fas fa-plus me-2"></i>Create New Loan</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <div class="col-12 mb-3">
+                                        <label for="name" class="form-label">
+                                            <i class="fas fa-tag me-1"></i>Loan Name
+                                        </label>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                               placeholder="e.g., Equipment Loan, Building Loan" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a loan name.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="principal" class="form-label">
+                                            <i class="fas fa-rupee-sign me-1"></i>Principal Amount (₹)
+                                        </label>
+                                        <input type="number" class="form-control" id="principal" name="principal"
+                                               placeholder="0.00" step="0.01" min="0" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid principal amount.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="rate" class="form-label">
+                                            <i class="fas fa-percent me-1"></i>Interest Rate (% per annum)
+                                        </label>
+                                        <input type="number" class="form-control" id="rate" name="rate"
+                                               placeholder="0.00" step="0.01" min="0" max="50" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid interest rate (0-50%).
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="months" class="form-label">
+                                            <i class="fas fa-calendar-alt me-1"></i>Tenure (Months)
+                                        </label>
+                                        <input type="number" class="form-control" id="months" name="months"
+                                               placeholder="0" min="1" max="360" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a valid tenure (1-360 months).
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">
+                                            <i class="fas fa-calculator me-1"></i>Calculated EMI
+                                        </label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₹</span>
+                                            <input type="text" class="form-control" id="emi_display" readonly>
+                                        </div>
+                                        <small class="text-muted">EMI will be calculated automatically</small>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12 mb-4">
+                                        <label for="description" class="form-label">
+                                            <i class="fas fa-sticky-note me-1"></i>Description (Optional)
+                                        </label>
+                                        <textarea class="form-control" id="description" name="description"
+                                                  rows="3" placeholder="Additional details about this loan..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="{% url 'finance_list' %}" class="btn btn-outline-secondary me-md-2">
+                                                <i class="fas fa-arrow-left me-1"></i>Cancel
+                                            </a>
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="fas fa-save me-2"></i>Create Loan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- EMI Calculator Preview -->
+                    <div class="card mt-4 shadow">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>EMI Preview</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <div class="border-end">
+                                        <h6 class="text-muted">Principal</h6>
+                                        <h4 class="text-primary" id="preview_principal">₹0</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="border-end">
+                                        <h6 class="text-muted">Interest</h6>
+                                        <h4 class="text-warning" id="preview_interest">₹0</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6 class="text-muted">Total Amount</h6>
+                                    <h4 class="text-success" id="preview_total">₹0</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+
+    // EMI Calculator
+    function calculateEMI() {
+        const principal = parseFloat(document.getElementById('principal').value) || 0;
+        const rate = parseFloat(document.getElementById('rate').value) || 0;
+        const months = parseInt(document.getElementById('months').value) || 0;
+
+        if (principal > 0 && rate > 0 && months > 0) {
+            const monthlyRate = rate / 100 / 12;
+            const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, months) / (Math.pow(1 + monthlyRate, months) - 1);
+            const totalAmount = emi * months;
+            const totalInterest = totalAmount - principal;
+
+            document.getElementById('emi_display').value = emi.toFixed(2);
+            document.getElementById('preview_principal').textContent = '₹' + principal.toLocaleString('en-IN');
+            document.getElementById('preview_interest').textContent = '₹' + totalInterest.toFixed(2);
+            document.getElementById('preview_total').textContent = '₹' + totalAmount.toFixed(2);
+        } else {
+            document.getElementById('emi_display').value = '';
+            document.getElementById('preview_principal').textContent = '₹0';
+            document.getElementById('preview_interest').textContent = '₹0';
+            document.getElementById('preview_total').textContent = '₹0';
+        }
+    }
+
+    // Add event listeners for real-time calculation
+    document.getElementById('principal').addEventListener('input', calculateEMI);
+    document.getElementById('rate').addEventListener('input', calculateEMI);
+    document.getElementById('months').addEventListener('input', calculateEMI);
+
+    // Auto-format inputs
+    document.getElementById('principal').addEventListener('input', function(e) {
+        let value = e.target.value;
+        if (value && !isNaN(value)) {
+            e.target.value = parseFloat(value).toFixed(2);
+        }
+    });
+
+    document.getElementById('rate').addEventListener('input', function(e) {
+        let value = e.target.value;
+        if (value && !isNaN(value)) {
+            e.target.value = parseFloat(value).toFixed(2);
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

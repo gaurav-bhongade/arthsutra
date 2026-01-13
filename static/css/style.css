@@ -1,0 +1,217 @@
+/* Custom styles for ArthSutra Healthcare Finance Management */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    overflow-x: hidden;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: #007bff !important;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+    border-radius: 25px;
+    padding: 10px 30px;
+}
+
+.btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.table {
+    background-color: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+.form-control {
+    border-radius: 25px;
+    border: 2px solid #e9ecef;
+    padding: 10px 20px;
+}
+
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+.dashboard-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.dashboard-card .card-body {
+    padding: 2rem;
+}
+
+.stats-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stats-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.chart-container {
+    position: relative;
+    height: 400px;
+}
+
+.sidebar {
+    background-color: white;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.sidebar .nav-link {
+    color: #333;
+    padding: 15px 20px;
+    border-radius: 0;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    background-color: #f8f9fa;
+    color: #007bff;
+}
+
+.sidebar .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+.main-content {
+    padding: 20px;
+    margin-bottom: 80px; /* Space for fixed footer */
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 5rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.upload-zone {
+    border: 2px dashed #007bff;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.upload-zone:hover {
+    background-color: #f8f9fa;
+    border-color: #0056b3;
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+}
+
+/* Footer Styles */
+footer {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-top: 3px solid #007bff;
+    left: 250px; /* Account for sidebar width */
+}
+
+footer a {
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: #007bff !important;
+}
+
+/* Responsive adjustments for fixed layout */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed !important;
+        top: 56px !important;
+        left: -250px !important;
+        width: 250px !important;
+        height: calc(100vh - 56px) !important;
+        z-index: 1025 !important;
+        transition: left 0.3s !important;
+    }
+
+    .sidebar.show {
+        left: 0 !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+    }
+
+    /* Mobile footer adjustment - full width when sidebar is hidden */
+    footer {
+        left: 0 !important;
+    }
+
+    /* Mobile navbar toggle */
+    .navbar-toggler {
+        border: none;
+        padding: 0.5rem;
+    }
+
+    .navbar-toggler:focus {
+        box-shadow: none;
+    }
+}
+
+/* Content area adjustments */
+.content-wrapper {
+    padding-bottom: 100px; /* Extra space for footer */
+}
+
+/* Custom scrollbar for sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

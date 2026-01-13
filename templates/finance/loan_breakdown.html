@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}EMI Breakdown - {{ loan.loan_name }} - ArthSutra{% endblock %}
+
+{% block extra_head %}
+<style>
+    .breakdown-table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        border-top: 2px solid #dee2e6;
+    }
+    .breakdown-table .total-row {
+        background-color: #e9ecef;
+        font-weight: bold;
+    }
+    .breakdown-table .total-row td {
+        border-top: 2px solid #6c757d;
+    }
+    .loan-summary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'finance_list' %}">Finance</a></li>
+                        <li class="breadcrumb-item active">{{ loan.loan_name }}</li>
+                    </ol>
+                </nav>
+
+                <!-- Loan Summary -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card loan-summary">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="mb-1">₹{{ loan.principal|floatformat:0 }}</h3>
+                                        <small>Principal Amount</small>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="mb-1">{{ loan.interest_rate }}%</h3>
+                                        <small>Interest Rate</small>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="mb-1">{{ loan.tenure_months }}</h3>
+                                        <small>Tenure (Months)</small>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h3 class="mb-1">₹{{ loan.emi|floatformat:0 }}</h3>
+                                        <small>Monthly EMI</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EMI Breakdown Table -->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                            Monthly EMI Breakdown - {{ loan.loan_name }}
+                        </h5>
+                        <a href="{% url 'finance_list' %}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Finance
+                        </a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-striped breakdown-table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Month</th>
+                                        <th class="text-end">EMI Amount</th>
+                                        <th class="text-end">Principal Paid</th>
+                                        <th class="text-end">Interest Paid</th>
+                                        <th class="text-end">Remaining Balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in emi_breakdown %}
+                                    <tr>
+                                        <td class="text-center fw-bold">{{ item.month }}</td>
+                                        <td class="text-end">₹{{ item.emi|floatformat:2 }}</td>
+                                        <td class="text-end text-success">₹{{ item.principal_payment|floatformat:2 }}</td>
+                                        <td class="text-end text-warning">₹{{ item.interest_payment|floatformat:2 }}</td>
+                                        <td class="text-end text-primary fw-bold">₹{{ item.remaining_balance|floatformat:2 }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                    <!-- Total Row -->
+                                    <tr class="total-row">
+                                        <td class="text-center fw-bold">TOTAL</td>
+                                        <td class="text-end fw-bold">₹{{ total_amount|floatformat:2 }}</td>
+                                        <td class="text-end fw-bold text-success">₹{{ total_principal|floatformat:2 }}</td>
+                                        <td class="text-end fw-bold text-warning">₹{{ total_interest|floatformat:2 }}</td>
+                                        <td class="text-end fw-bold text-primary">-</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Summary Cards -->
+                <div class="row mt-4">
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title text-success">Total Principal</h5>
+                                <h3 class="text-success">₹{{ total_principal|floatformat:0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title text-warning">Total Interest</h5>
+                                <h3 class="text-warning">₹{{ total_interest|floatformat:0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title text-primary">Total Amount</h5>
+                                <h3 class="text-primary">₹{{ total_amount|floatformat:0 }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

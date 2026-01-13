@@ -1,0 +1,7 @@
+department_id,service_type,amount,date
+1,Consultation,150000,15-10-2025
+1,Surgery,85000,20-10-2025
+2,X-Ray Services,25000,18-11-2025
+2,Ultrasound,18000,22-11-2025
+3,Pharmacy Sales,45000,16-11-2025
+3,Medical Checkup,12000,25-11-2025

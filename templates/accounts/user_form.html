@@ -1,0 +1,428 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - ArthSutra{% endblock %}
+
+{% block content %}
+<div class="container-fluid content-wrapper">
+    <div class="row">
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            <i class="fas fa-{{ message.tags|default:'info' }} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+        <!-- Main Content -->
+        <div class="col-12 main-content">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'user_list' %}">User Management</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-info text-white">
+                            <h4 class="mb-0"><i class="fas fa-user-edit me-2"></i>{{ title }}</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            {% if form.errors %}
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="fas fa-exclamation-triangle me-2"></i>
+                                <strong>Please fix the following errors:</strong>
+                                <ul class="mb-0 mt-2 ps-3">
+                                    {% for field, errors in form.errors.items %}
+                                        {% for error in errors %}
+                                            <li><strong>{{ field|title }}:</strong> {{ error }}</li>
+                                        {% endfor %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            {% endif %}
+
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+
+                                <!-- Username and Role Row -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_username" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Username
+                                        </label>
+                                        <input type="text" class="form-control" id="id_username" name="username"
+                                               value="{{ form.username.value|default:'' }}" 
+                                               placeholder="Enter username" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a username.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_role" class="form-label">
+                                            <i class="fas fa-shield-alt me-1"></i>Role
+                                        </label>
+                                        <select class="form-select" id="id_role" name="role" required>
+                                            <option value="">Choose role...</option>
+                                            {% for value, display in form.role.field.choices %}
+                                            <option value="{{ value }}" {% if form.role.value == value %}selected{% endif %}>{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Please select a role.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Name Row -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_first_name" class="form-label">
+                                            <i class="fas fa-user-tag me-1"></i>First Name
+                                        </label>
+                                        <input type="text" class="form-control" id="id_first_name" name="first_name"
+                                               value="{{ form.first_name.value|default:'' }}"
+                                               placeholder="Enter first name">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_last_name" class="form-label">
+                                            <i class="fas fa-user-tag me-1"></i>Last Name
+                                        </label>
+                                        <input type="text" class="form-control" id="id_last_name" name="last_name"
+                                               value="{{ form.last_name.value|default:'' }}"
+                                               placeholder="Enter last name">
+                                    </div>
+                                </div>
+
+                                <!-- Email and Password Row -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_email" class="form-label">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
+                                        </label>
+                                        <input type="email" class="form-control" id="id_email" name="email"
+                                               value="{{ form.email.value|default:'' }}"
+                                               placeholder="Enter email address">
+                                    </div>
+
+                                    {% if not form.instance.pk %}
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_password1" class="form-label">
+                                            <i class="fas fa-lock me-1"></i>Password
+                                        </label>
+                                        <input type="password" class="form-control" id="id_password1" name="password1"
+                                               placeholder="Enter password" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                {% if not form.instance.pk %}
+                                <!-- Confirm Password Row -->
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label for="id_password2" class="form-label">
+                                            <i class="fas fa-lock me-1"></i>Confirm Password
+                                        </label>
+                                        <input type="password" class="form-control" id="id_password2" name="password2"
+                                               placeholder="Confirm password" required>
+                                        <div class="invalid-feedback">
+                                            Please confirm your password.
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <!-- Form Actions -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="{% url 'user_list' %}" class="btn btn-outline-secondary me-md-2">
+                                                <i class="fas fa-arrow-left me-1"></i>Cancel
+                                            </a>
+                                            <button type="submit" class="btn btn-info btn-lg">
+                                                <i class="fas fa-save me-2"></i>
+                                                {% if form.instance.pk %}Update User{% else %}Create User{% endif %}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-users fa-2x text-info mb-2"></i>
+                                    <h5>{{ total_users|default:0 }}</h5>
+                                    <small class="text-muted">Total Users</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-shield fa-2x text-danger mb-2"></i>
+                                    <h5>{{ admin_count|default:0 }}</h5>
+                                    <small class="text-muted">Admin Users</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-tag fa-2x text-warning mb-2"></i>
+                                    <h5>{{ expense_count|default:0 }}</h5>
+                                    <small class="text-muted">Expense Users</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-check fa-2x text-success mb-2"></i>
+                                    <h5>{{ income_count|default:0 }}</h5>
+                                    <small class="text-muted">Income Users</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Role Information -->
+                    <div class="card shadow mt-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Role Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="text-center">
+                                        <span class="badge bg-danger px-3 py-2 mb-2">ADMIN</span>
+                                        <p class="small mb-0">Full system access and user management</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="text-center">
+                                        <span class="badge bg-warning px-3 py-2 mb-2 text-dark">EXPENSE</span>
+                                        <p class="small mb-0">Can only manage expense records</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="text-center">
+                                        <span class="badge bg-success px-3 py-2 mb-2">INCOME</span>
+                                        <p class="small mb-0">Can only manage income records</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom styles matching the Add Expense page */
+    .form-control, .form-select {
+        border-radius: 8px;
+        border: 2px solid #e9ecef;
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #495057;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-label i {
+        color: #007bff;
+        width: 20px;
+    }
+
+    .invalid-feedback {
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .alert {
+        border-radius: 8px;
+        border: none;
+        padding: 1rem 1.25rem;
+    }
+
+    .alert ul {
+        margin-bottom: 0;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+    }
+
+    .card-header {
+        border-radius: 10px 10px 0 0 !important;
+        padding: 1rem 1.5rem;
+    }
+
+    .btn-info {
+        background-color: #007bff;
+        border-color: #007bff;
+        border-radius: 25px;
+        padding: 10px 30px;
+        font-weight: 500;
+    }
+
+    .btn-info:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 25px;
+        padding: 10px 30px;
+        font-weight: 500;
+        border-width: 2px;
+    }
+
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: white;
+    }
+
+    .card.text-center .card-body {
+        padding: 1.5rem 1rem;
+    }
+
+    .card.text-center .fa-2x {
+        margin-bottom: 0.75rem;
+    }
+
+    .card.text-center h5 {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .card.text-center small {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+
+    .badge {
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.5rem !important;
+        }
+        
+        .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .d-md-flex .me-md-2 {
+            margin-right: 0 !important;
+        }
+        
+        .card.text-center {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+
+{% block extra_scripts %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+
+    // Password confirmation validation
+    {% if not form.instance.pk %}
+    const password1Field = document.getElementById('id_password1');
+    const password2Field = document.getElementById('id_password2');
+
+    if (password1Field && password2Field) {
+        function validatePassword() {
+            var password1 = password1Field.value;
+            var password2 = password2Field.value;
+
+            if (password1 !== password2) {
+                password2Field.setCustomValidity('Passwords do not match');
+                password2Field.classList.add('is-invalid');
+            } else {
+                password2Field.setCustomValidity('');
+                password2Field.classList.remove('is-invalid');
+            }
+        }
+
+        password1Field.addEventListener('input', validatePassword);
+        password2Field.addEventListener('input', validatePassword);
+    }
+    {% endif %}
+
+    // Auto-focus on username field
+    document.addEventListener('DOMContentLoaded', function() {
+        const usernameField = document.getElementById('id_username');
+        if (usernameField) {
+            usernameField.focus();
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

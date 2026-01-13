@@ -1,0 +1,15 @@
+department_id,service_type,amount,date
+1,Consultation,15000.00,2025-01-15
+1,Cardiac Surgery,200000.00,2025-01-18
+1,Echo Cardiogram,8000.00,2025-02-20
+2,Pharmacy Sales,75000.00,2025-02-22
+2,Medical Tests,25000.00,2025-03-25
+3,X-Ray Services,12000.00,2025-04-28
+3,MRI Scan,35000.00,2025-04-01
+3,CT Scan,28000.00,2025-05-05
+4,Emergency Care,45000.00,2025-06-08
+4,ICU Treatment,85000.00,2025-07-10
+5,Surgical Procedures,150000.00,2025-08-12
+5,Endoscopy,25000.00,2025-11-15
+6,Child Vaccination,15000.00,2025-12-18
+6,Neonatal Care,55000.00,2025-12-20

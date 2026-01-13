@@ -1,0 +1,809 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - ArthSutra{% endblock %}
+
+{% block content %}
+<div class="container-fluid content-wrapper">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-12 main-content">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'user_list' %}">User Management</a></li>
+                    <li class="breadcrumb-item active">{{ title }}</li>
+                </ol>
+            </nav>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow">
+                        <div class="card-header bg-info text-white">
+                            <h4 class="mb-0"><i class="fas fa-user-plus me-2"></i>{{ title }}</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_username" class="form-label">
+                                            <i class="fas fa-user me-1"></i>Username
+                                        </label>
+                                        <input type="text" class="form-control" id="id_username" name="username"
+                                               value="{{ form.username.value|default:'' }}" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a username.
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_role" class="form-label">
+                                            <i class="fas fa-shield-alt me-1"></i>Role
+                                        </label>
+                                        <select class="form-select" id="id_role" name="role" required>
+                                            <option value="">Choose role...</option>
+                                            {% for value, display in form.role.field.choices %}
+                                            <option value="{{ value }}" {% if form.role.value == value %}selected{% endif %}>{{ display }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Please select a role.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_first_name" class="form-label">
+                                            <i class="fas fa-user-tag me-1"></i>First Name
+                                        </label>
+                                        <input type="text" class="form-control" id="id_first_name" name="first_name"
+                                               value="{{ form.first_name.value|default:'' }}">
+                                    </div>
+
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_last_name" class="form-label">
+                                            <i class="fas fa-user-tag me-1"></i>Last Name
+                                        </label>
+                                        <input type="text" class="form-control" id="id_last_name" name="last_name"
+                                               value="{{ form.last_name.value|default:'' }}">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_email" class="form-label">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
+                                        </label>
+                                        <input type="email" class="form-control" id="id_email" name="email"
+                                               value="{{ form.email.value|default:'' }}">
+                                    </div>
+
+                                    {% if not form.instance.pk %}
+                                    <div class="col-md-6 mb-3">
+                                        <label for="id_password1" class="form-label">
+                                            <i class="fas fa-lock me-1"></i>Password
+                                        </label>
+                                        <input type="password" class="form-control" id="id_password1" name="password1" required>
+                                        <div class="invalid-feedback">
+                                            Please enter a password.
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                {% if not form.instance.pk %}
+                                <div class="row">
+                                    <div class="col-md-6 mb-4">
+                                        <label for="id_password2" class="form-label">
+                                            <i class="fas fa-lock me-1"></i>Confirm Password
+                                        </label>
+                                        <input type="password" class="form-control" id="id_password2" name="password2" required>
+                                        <div class="invalid-feedback">
+                                            Please confirm your password.
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                            <a href="{% url 'user_list' %}" class="btn btn-outline-secondary me-md-2">
+                                                <i class="fas fa-arrow-left me-1"></i>Cancel
+                                            </a>
+                                            <button type="submit" class="btn btn-info btn-lg">
+                                                <i class="fas fa-save me-2"></i>
+                                                {% if form.instance.pk %}Update{% else %}Create{% endif %} User
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-users fa-2x text-info mb-2"></i>
+                                    <h5>{{ total_users|default:0 }}</h5>
+                                    <small class="text-muted">Total Users</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-shield fa-2x text-danger mb-2"></i>
+                                    <h5>{{ admin_count|default:0 }}</h5>
+                                    <small class="text-muted">Admin Users</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <i class="fas fa-user-friends fa-2x text-success mb-2"></i>
+                                    <h5>{{ expense_count|default:0|add:income_count|default:0 }}</h5>
+                                    <small class="text-muted">Staff Users</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms)
+            .forEach(function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+    })()
+
+    // Password confirmation validation
+    {% if not form.instance.pk %}
+    const password1Field = document.getElementById('id_password1');
+    const password2Field = document.getElementById('id_password2');
+
+    if (password1Field && password2Field) {
+        password2Field.addEventListener('input', function() {
+            var password1 = password1Field.value;
+            var password2 = this.value;
+
+            if (password1 !== password2) {
+                this.setCustomValidity('Passwords do not match');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+    }
+    {% endif %}
+
+    // Auto-focus on username field
+    document.getElementById('id_username').focus();
+</script>
+{% endblock %}
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='4'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .form-header h4 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-header p {
+        opacity: 0.9;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .form-body {
+        padding: 2.5rem;
+    }
+
+    .form-group-modern {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+
+    .form-group-modern label {
+        position: absolute;
+        top: -8px;
+        left: 16px;
+        background: white;
+        padding: 0 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #6c757d;
+        z-index: 10;
+        transition: all 0.3s ease;
+    }
+
+    .form-group-modern .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+    }
+
+    .form-group-modern .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        background: white;
+        transform: translateY(-2px);
+    }
+
+    .form-group-modern .form-control:focus + label,
+    .form-group-modern .form-control:not(:placeholder-shown) + label {
+        color: #667eea;
+        font-weight: 700;
+    }
+
+    .role-selector {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .role-card {
+        border: 2px solid #e9ecef;
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .role-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .role-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .role-card.selected {
+        border-color: #667eea;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .role-card.selected::before {
+        opacity: 1;
+    }
+
+    .role-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .role-card:hover .role-icon {
+        transform: scale(1.1);
+    }
+
+    .role-card.admin .role-icon { color: #dc3545; }
+    .role-card.expense .role-icon { color: #fd7e14; }
+    .role-card.income .role-icon { color: #28a745; }
+
+    .role-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .role-description {
+        font-size: 0.9rem;
+        color: #6c757d;
+        line-height: 1.4;
+    }
+
+    .password-strength {
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .password-strength.weak { color: #dc3545; }
+    .password-strength.medium { color: #fd7e14; }
+    .password-strength.strong { color: #28a745; }
+
+    .btn-modern {
+        border-radius: 12px;
+        padding: 0.8rem 2rem;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        border: none;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-modern::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s ease;
+    }
+
+    .btn-modern:hover::before {
+        left: 100%;
+    }
+
+    .btn-modern:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-primary-modern {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary-modern:hover {
+        background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        color: white;
+    }
+
+    .permissions-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: none;
+        border-radius: 16px;
+        margin-top: 2rem;
+    }
+
+    .permission-item {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        transition: transform 0.3s ease;
+    }
+
+    .permission-item:hover {
+        transform: translateY(-3px);
+    }
+
+    .permission-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-right: 1rem;
+    }
+
+    .permission-icon.admin { background: linear-gradient(135deg, #dc3545, #c82333); color: white; }
+    .permission-icon.expense { background: linear-gradient(135deg, #fd7e14, #e8680f); color: white; }
+    .permission-icon.income { background: linear-gradient(135deg, #28a745, #1e7e34); color: white; }
+
+    .alert-modern {
+        border: none;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .user-form-container {
+            padding: 1rem 0;
+        }
+
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .role-selector {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="user-form-container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="mb-4">
+                    <ol class="breadcrumb bg-transparent">
+                        <li class="breadcrumb-item"><a href="{% url 'dashboard' %}" class="text-decoration-none">Dashboard</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'user_list' %}" class="text-decoration-none">User Management</a></li>
+                        <li class="breadcrumb-item active text-primary" aria-current="page">{{ title }}</li>
+                    </ol>
+                </nav>
+
+                <div class="user-form-card">
+                    <!-- Form Header -->
+                    <div class="form-header">
+                        <h4><i class="fas fa-user-plus me-3"></i>{{ title }}</h4>
+                        <p>Create or update user accounts with appropriate role assignments</p>
+                    </div>
+
+                    <!-- Form Body -->
+                    <div class="form-body">
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-modern alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>{{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <form method="post" id="userForm" class="needs-validation" novalidate>
+                            {% csrf_token %}
+
+                            <!-- Role Selection -->
+                            <div class="mb-4">
+                                <h5 class="mb-3 text-center">
+                                    <i class="fas fa-shield-alt me-2 text-primary"></i>Select User Role
+                                </h5>
+                                <div class="role-selector">
+                                    <div class="role-card admin" data-role="ADMIN">
+                                        <div class="role-icon">
+                                            <i class="fas fa-crown"></i>
+                                        </div>
+                                        <div class="role-title">Administrator</div>
+                                        <div class="role-description">Full system access and user management capabilities</div>
+                                    </div>
+                                    <div class="role-card expense" data-role="EXPENSE_USER">
+                                        <div class="role-icon">
+                                            <i class="fas fa-arrow-down"></i>
+                                        </div>
+                                        <div class="role-title">Expense User</div>
+                                        <div class="role-description">Manage expenses and related financial data</div>
+                                    </div>
+                                    <div class="role-card income" data-role="INCOME_USER">
+                                        <div class="role-icon">
+                                            <i class="fas fa-arrow-up"></i>
+                                        </div>
+                                        <div class="role-title">Income User</div>
+                                        <div class="role-description">Manage income and related financial data</div>
+                                    </div>
+                                </div>
+                                {{ form.role }}
+                                {% if form.role.errors %}
+                                    <div class="invalid-feedback d-block text-center mt-2">
+                                        {{ form.role.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Personal Information -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label for="{{ form.first_name.id_for_label }}">
+                                            <i class="fas fa-signature me-1"></i>First Name
+                                        </label>
+                                        {{ form.first_name }}
+                                        {% if form.first_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.first_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label for="{{ form.last_name.id_for_label }}">
+                                            <i class="fas fa-signature me-1"></i>Last Name
+                                        </label>
+                                        {{ form.last_name }}
+                                        {% if form.last_name.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.last_name.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Account Information -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label for="{{ form.username.id_for_label }}">
+                                            <i class="fas fa-user me-1"></i>Username
+                                        </label>
+                                        {{ form.username }}
+                                        {% if form.username.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.username.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label for="{{ form.email.id_for_label }}">
+                                            <i class="fas fa-envelope me-1"></i>Email Address
+                                        </label>
+                                        {{ form.email }}
+                                        {% if form.email.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.email.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {% if not form.instance.pk %}
+                            <!-- Password fields only for new users -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label for="{{ form.password1.id_for_label }}">
+                                            <i class="fas fa-lock me-1"></i>Password
+                                        </label>
+                                        {{ form.password1 }}
+                                        <div id="passwordStrength" class="password-strength"></div>
+                                        {% if form.password1.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.password1.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group-modern">
+                                        <label for="{{ form.password2.id_for_label }}">
+                                            <i class="fas fa-lock me-1"></i>Confirm Password
+                                        </label>
+                                        {{ form.password2 }}
+                                        {% if form.password2.errors %}
+                                            <div class="invalid-feedback d-block">
+                                                {{ form.password2.errors.0 }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            <!-- Action Buttons -->
+                            <div class="d-flex justify-content-between align-items-center mt-4 pt-4 border-top">
+                                <a href="{% url 'user_list' %}" class="btn btn-modern btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Back to Users
+                                </a>
+                                <button type="submit" class="btn btn-modern btn-primary-modern">
+                                    <i class="fas fa-save me-2"></i>
+                                    {% if form.instance.pk %}Update{% else %}Create{% endif %} User
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Role Permissions Information -->
+                <div class="permissions-card mt-4">
+                    <div class="card-body p-4">
+                        <h5 class="text-center mb-4">
+                            <i class="fas fa-info-circle me-2 text-primary"></i>Role Permissions Overview
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="permission-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="permission-icon admin">
+                                            <i class="fas fa-crown"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Administrator</h6>
+                                            <small class="text-muted">Full System Access</small>
+                                        </div>
+                                    </div>
+                                    <ul class="list-unstyled mt-3 mb-0 small">
+                                        <li><i class="fas fa-check text-success me-2"></i>Manage all users</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>All financial operations</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Upload all data types</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Access all reports</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="permission-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="permission-icon expense">
+                                            <i class="fas fa-arrow-down"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Expense User</h6>
+                                            <small class="text-muted">Expense Management</small>
+                                        </div>
+                                    </div>
+                                    <ul class="list-unstyled mt-3 mb-0 small">
+                                        <li><i class="fas fa-check text-success me-2"></i>Add/view expenses</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Upload expense data</li>
+                                        <li><i class="fas fa-times text-muted me-2"></i>Limited dashboard access</li>
+                                        <li><i class="fas fa-times text-muted me-2"></i>No user management</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="permission-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="permission-icon income">
+                                            <i class="fas fa-arrow-up"></i>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-1">Income User</h6>
+                                            <small class="text-muted">Income Management</small>
+                                        </div>
+                                    </div>
+                                    <ul class="list-unstyled mt-3 mb-0 small">
+                                        <li><i class="fas fa-check text-success me-2"></i>Add/view income</li>
+                                        <li><i class="fas fa-check text-success me-2"></i>Upload income data</li>
+                                        <li><i class="fas fa-times text-muted me-2"></i>Limited dashboard access</li>
+                                        <li><i class="fas fa-times text-muted me-2"></i>No user management</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Role selection functionality
+        const roleCards = document.querySelectorAll('.role-card');
+        const roleInput = document.getElementById('{{ form.role.id_for_label }}');
+
+        roleCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                roleCards.forEach(c => c.classList.remove('selected'));
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                // Update hidden input
+                const roleValue = this.getAttribute('data-role');
+                roleInput.value = roleValue;
+            });
+        });
+
+        // Set initial selected role
+        const currentRole = roleInput.value;
+        if (currentRole) {
+            const selectedCard = document.querySelector(`[data-role="${currentRole}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+        }
+
+        // Password strength indicator
+        const password1Input = document.getElementById('{{ form.password1.id_for_label }}');
+        const passwordStrength = document.getElementById('passwordStrength');
+
+        if (password1Input && passwordStrength) {
+            password1Input.addEventListener('input', function() {
+                const password = this.value;
+                let strength = 0;
+                let feedback = [];
+
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password)) strength++;
+                if (/[A-Z]/.test(password)) strength++;
+                if (/[0-9]/.test(password)) strength++;
+                if (/[^A-Za-z0-9]/.test(password)) strength++;
+
+                passwordStrength.className = 'password-strength';
+
+                if (password.length === 0) {
+                    passwordStrength.textContent = '';
+                } else if (strength < 3) {
+                    passwordStrength.className = 'password-strength weak';
+                    passwordStrength.textContent = 'Weak password';
+                } else if (strength < 4) {
+                    passwordStrength.className = 'password-strength medium';
+                    passwordStrength.textContent = 'Medium strength';
+                } else {
+                    passwordStrength.className = 'password-strength strong';
+                    passwordStrength.textContent = 'Strong password';
+                }
+            });
+        }
+
+        // Form validation with modern feedback
+        const form = document.getElementById('userForm');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                // Add shake animation to invalid fields
+                const invalidFields = form.querySelectorAll(':invalid');
+                invalidFields.forEach(field => {
+                    field.style.animation = 'shake 0.5s ease-in-out';
+                    setTimeout(() => {
+                        field.style.animation = '';
+                    }, 500);
+                });
+            }
+            form.classList.add('was-validated');
+        });
+
+        // Add shake animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

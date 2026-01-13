@@ -1,0 +1,13 @@
+department_id,expense_type,amount,date
+1,Medical Supplies,50000.00,2024-01-15
+1,Equipment Maintenance,25000.00,2024-01-20
+2,Medicines,75000.00,2024-01-18
+2,Laboratory Supplies,15000.00,2024-01-22
+3,X-Ray Film,8000.00,2024-01-25
+3,Surgical Instruments,45000.00,2024-01-28
+4,Emergency Equipment,30000.00,2024-02-01
+4,Ambulance Maintenance,20000.00,2024-02-05
+5,OT Consumables,35000.00,2024-02-08
+5,Anesthesia Supplies,12000.00,2024-02-10
+6,Patient Care Supplies,18000.00,2024-02-12
+6,Vaccines,25000.00,2024-02-15
