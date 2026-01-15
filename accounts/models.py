@@ -7,4 +7,4 @@ class User(AbstractUser):
         ('EXPENSE_USER', 'Expense User'),
         ('INCOME_USER', 'Income User'),
     )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='EXPENSE_USER')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ADMIN')
