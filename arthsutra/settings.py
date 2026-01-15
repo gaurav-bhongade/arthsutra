@@ -82,11 +82,11 @@ AUTH_USER_MODEL = 'accounts.User'
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    'SQLT': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'SQLT': {
+    'default': {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'nivedita19$default',
         'USER': 'nivedita19',
